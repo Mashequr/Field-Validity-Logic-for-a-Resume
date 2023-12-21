@@ -40,7 +40,7 @@ def validate_resume_fields(resume):
         return results
     
 # test case
-print("Invalid data test case")
+print("Valid data test case")
 
 resume_data = {
     "name": "Mashequr Rahman Khan",
