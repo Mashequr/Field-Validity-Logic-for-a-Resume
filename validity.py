@@ -20,6 +20,9 @@ def validate_phone(phone):
     phone_regex = r'^((\+8801)|(01))[0-9]{9}$'
     return re.match(phone_regex, phone) is not None
 
+def validate_address(address):
+    return isinstance(address, str) and len(address) > 0  # Basic validation for non-empty string
+
 def validate_url(url):
     if url is None:
         return False
@@ -32,14 +35,14 @@ def validate_resume_fields(resume):
         results["name"] = validate_name(resume.get("name", ""))
         results["email"] = validate_email(resume.get("email", ""))
         results["phone"] = validate_phone(resume.get("phone", ""))
-        results["address"] = "address" in resume
+        results["address"] = validate_address(resume.get("address", ""))
         results["github"] = validate_url(resume.get("github", ""))
         results["linkedin"] = validate_url(resume.get("linkedin", ""))
         results["portfolio_website"] = validate_url(resume.get("portfolio_website", ""))
 
         return results
     
-# test case
+# test cases
 print("Valid data test case")
 
 resume_data = {
@@ -78,6 +81,7 @@ print()
 
 # Test case with invalid data
 print("Invalid data test case")
+
 invalid_resume_data = {
     "name": "This Is An Extremely Long Name That Exceeds The Hundred Character Limit And Is Therefore Invalid And Will Not Work",
     "email": "invalid_email@example",  # Missing top-level domain
@@ -92,3 +96,56 @@ validation_results = validate_resume_fields(invalid_resume_data)
 
 for field, is_valid in validation_results.items():
     print(f"{field.capitalize()}: {'Valid' if is_valid else 'Invalid'}")
+
+print()
+print("Additional Test Cases")
+
+# Test case with variations in email format
+email_variations = [
+    "valid_email@example.com",
+    "john.doe@company.co.uk",
+    "user123@subdomain.example",
+    "user.name123@site-domain.com",
+    "invalid_email@example",  # Missing top-level domain
+    "invalid_email@.com",  # Missing domain name
+    "@example.com",  # Missing username
+]
+
+print()
+print("Email Variations Test Case")
+for email in email_variations:
+    is_valid = validate_email(email)
+    print(f"Email: {email}, {'Valid' if is_valid else 'Invalid'}")
+
+print()
+
+# Test case with different valid phone number formats
+phone_formats = [
+    "+8801763307060",
+    "01763307060",
+    "+8801914604979", # Invalid due to white spaces and brackets
+    "+44 20 7946 0958", # Invalid due to white spaces
+    "1234567890",  # Invalid (10 digits only excluding Bangladesh code)
+    "+123",  # Invalid without a complete number
+]
+
+print()
+print("Phone Number Formats Test Case")
+for phone in phone_formats:
+    is_valid = validate_phone(phone)
+    print(f"Phone: {phone}, {'Valid' if is_valid else 'Invalid'}")
+
+print()
+
+# Test case with potentially invalid address formats
+address_formats = [
+    "123 Main St, City, Country",
+    "",  # Invalid: Empty address
+    None,  # Invalid: None value
+    12345,  # Invalid: Non-string value
+]
+
+print("Address Formats Test Case")
+for address in address_formats:
+    is_valid = validate_address(address)
+    print(f"Address: {address}, {'Valid' if is_valid else 'Invalid'}")
